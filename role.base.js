@@ -35,5 +35,17 @@ module.exports = {
         // done if the target is full or if we're out of energy
         return (target.energy >= target.energyCapacity ||
                 creep.carry.energy <= 0);
+    },
+    build: function(creep) {
+        // find a target site
+        var target = creep.room.find(FIND_CONSTRUCTION_SITES)[0];
+        if (target === undefined) return true;  // no targets -> done
+        // build it
+        if (creep.build(target) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
+        }
+        // done if the target is finished or if we're out of energy
+        return (target.progress >= target.progressTotal ||
+                creep.carry.energy <= 0);
     }
 };

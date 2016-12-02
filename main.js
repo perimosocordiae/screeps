@@ -1,10 +1,12 @@
 var roles = {
     harvester: require('role.harvester'),
     upgrader: require('role.upgrader'),
+    builder: require('role.builder'),
 };
 var role_distribution = {
-    harvester: 0.66666,
-    upgrader:  0.33333,
+    harvester: 0.5,
+    upgrader: 0.25,
+    builder: 0.25,
 }
 
 function spawnCreep(role_name, spawn) {
@@ -25,7 +27,7 @@ module.exports.loop = function () {
 
     // Run and count live creeps
     var num_creeps = 0;
-    var role_counts = {harvester: 0, upgrader: 0};
+    var role_counts = {harvester: 0, upgrader: 0, builder: 0};
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         role_counts[creep.memory.role]++;
