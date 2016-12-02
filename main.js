@@ -2,9 +2,9 @@ var roles = {
     harvester: require('role.harvester'),
     upgrader: require('role.upgrader'),
 };
-var role_targets = {
-    harvester: 2,
-    upgrader: 1,
+var role_distribution = {
+    harvester: 0.33333,
+    upgrader:  0.99999,
 }
 
 function spawnCreep(role_name, spawn) {
@@ -24,20 +24,26 @@ module.exports.loop = function () {
     }
 
     // Run and count live creeps
+    var num_creeps = 0;
     var role_counts = {harvester: 0, upgrader: 0};
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
-        role_counts[creep.memory.role] += 1;
+        role_counts[creep.memory.role]++;
+        num_creeps++;
         var role = roles[creep.memory.role];
         if (role !== undefined) {
             role.run(creep);
         }
     }
 
-    // Spawn creeps up to the target count per role
-    for (var role_name in role_counts) {
-        if (role_counts[role_name] < role_targets[role_name]) {
-            spawnCreep(role_name, Game.spawns['Spawn1']);
+    // Spawn creeps if we're full, following the target distribution
+    var spawner = Game.spawns['Spawn1'];
+    if (spawner.energy >= spawner.energyCapacity) {
+        for (var role_name in role_counts) {
+            var target = role_distribution[role_name] * num_creeps;
+            if (role_counts[role_name] < target) {
+                spawnCreep(role_name, spawner);
+            }
         }
     }
 
