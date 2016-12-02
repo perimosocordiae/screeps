@@ -50,8 +50,6 @@ module.exports.loop = function () {
         }
         dist.sort();
         // first entry is the role we need most
-        if (dist[0][0] < 0) {
-            spawnCreep(dist[0][1], spawner);
-        }
+        spawnCreep(dist[0][1], spawner);
     }
 }
