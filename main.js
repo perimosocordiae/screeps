@@ -3,8 +3,8 @@ var roles = {
     upgrader: require('role.upgrader'),
 };
 var role_distribution = {
-    harvester: 0.33333,
-    upgrader:  0.99999,
+    harvester: 0.66666,
+    upgrader:  0.33333,
 }
 
 function spawnCreep(role_name, spawn) {
@@ -36,15 +36,22 @@ module.exports.loop = function () {
         }
     }
 
-    // Spawn creeps if we're full, following the target distribution
-    var spawner = Game.spawns['Spawn1'];
-    if (spawner.energy >= spawner.energyCapacity) {
+    // Spawn creeps from full spawners
+    for (var name in Game.spawns) {
+        var spawner = Game.spawns[name];
+        // skip spawners without enough energy
+        if (spawner.energy < spawner.energyCapacity) continue;
+
+        // compare the existing distribution to the target
+        var dist = [];
         for (var role_name in role_counts) {
             var target = role_distribution[role_name] * num_creeps;
-            if (role_counts[role_name] < target) {
-                spawnCreep(role_name, spawner);
-            }
+            dist.push([role_counts[role_name] - target, role_name]);
+        }
+        dist.sort();
+        // first entry is the role we need most
+        if (dist[0][0] < 0) {
+            spawnCreep(dist[0][1], spawner);
         }
     }
-
 }
