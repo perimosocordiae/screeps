@@ -9,10 +9,10 @@ var role_distribution = {
     builder: 0.25,
 }
 
-function spawnCreep(role_name, spawn) {
-    var name = spawn.createCreep([WORK,CARRY,MOVE], null, {role: role_name});
+function spawnCreep(role_name, spawner) {
+    var name = spawner.createCreep([WORK,CARRY,MOVE], null, {role: role_name});
     if (!Number.isInteger(name)) {
-        console.log('Spawned new', role_name + ':', name);
+        console.log(spawner.name, 'made new', role_name + ':', name);
     }
 }
 
@@ -42,7 +42,12 @@ module.exports.loop = function () {
     for (var name in Game.spawns) {
         var spawner = Game.spawns[name];
         // skip spawners without enough energy
-        if (spawner.energy < spawner.energyCapacity) continue;
+        if (spawner.energy < 200) continue;
+
+        if (num_creeps == 0) {
+            spawnCreep('harvester', spawner);
+            break;
+        }
 
         // compare the existing distribution to the target
         var dist = [];
@@ -53,5 +58,6 @@ module.exports.loop = function () {
         dist.sort();
         // first entry is the role we need most
         spawnCreep(dist[0][1], spawner);
+        break;
     }
 }
