@@ -55,7 +55,8 @@ module.exports.loop = function () {
             var target = role_distribution[role_name] * num_creeps;
             dist.push([role_counts[role_name] - target, role_name]);
         }
-        dist.sort();
+        // sort by difference from target dist
+        dist.sort((a,b) => a[0] - b[0]);
         // first entry is the role we need most
         spawnCreep(dist[0][1], spawner);
         break;
